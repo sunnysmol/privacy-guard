@@ -15,6 +15,8 @@ user prompt (contains PII)
 user sees response
 ```
 
+The output is rendered **entirely locally** — the PII prompt and the response never leave your machine.
+
 ## Fallback chain
 
 The extension tries backends in order, using the first one available:
@@ -51,7 +53,28 @@ If no local backend is available, a warning is shown and the prompt proceeds to 
 
 ## Installation
 
-This extension lives in your pi extensions directory and is auto-discovered:
+### Via pi (recommended)
+
+```bash
+pi install npm:@sunnysmol/privacy-guard
+```
+
+> **Note:** This package is published on GitHub Packages. You need to authenticate with GitHub first:
+> ```bash
+> npm login --registry https://npm.pkg.github.com
+> # username: your GitHub username
+> # password: a GitHub token with read:packages scope
+> ```
+
+Then restart pi or run `/reload`.
+
+### Via git (no auth needed)
+
+```bash
+pi install git:github.com/sunnysmol/privacy-guard
+```
+
+### Manual
 
 ```bash
 cd ~/.pi/agent/extensions
@@ -73,7 +96,7 @@ pip install mlx-lm
 python3 -m mlx_lm.convert --hf-path mlx-community/Qwen3-4B-4bit -q
 ```
 
-Or use [omlx](https://github.com/badlogic/omlx) for a multi-model server.
+Or use [omlx](https://github.com/badlogic/omlx) for a multi-model server — if it's running on port 8123, privacy-guard will use it automatically.
 
 Preferred MLX models (default → fallback):
 
@@ -91,7 +114,7 @@ Preferred MLX models (default → fallback):
 Install [Ollama](https://ollama.com) and pull a model:
 
 ```bash
-ollama pull qwen3.5:4b   # or any preferred model below
+ollama pull qwen3.5:4b   # or any model from the list below
 ollama serve             # starts the server on port 11434
 ```
 
@@ -108,16 +131,16 @@ Preferred Ollama models (default → fallback):
 | llama3.2:3b | |
 | llama3.2:1b | Minimum footprint |
 
-Any other locally-installed Ollama model will be used as a last resort.
+Any other locally-installed Ollama model will be used as a last resort (cloud/remote models are excluded).
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
-| `/privacy` | Show current status |
+| `/privacy` | Show current status (backend, model, enabled state) |
 | `/privacy on` | Enable the guard |
 | `/privacy off` | Disable the guard (cloud sees all data) |
-| `/privacy models` | List available local models |
+| `/privacy models` | List available local models for both MLX and Ollama |
 | `/privacy reload` | Re-probe servers and re-register provider |
 
 ## Running tests
@@ -126,7 +149,11 @@ Any other locally-installed Ollama model will be used as a last resort.
 npm test
 ```
 
-106 tests across 4 files covering the PII scanner, MLX server manager, Ollama server manager, and extension hook logic.
+106 tests across 4 files:
+- `scanner.test.ts` — PII pattern detection (HIGH/MEDIUM tiers, edge cases)
+- `mlx-server.test.ts` — MLX server manager (probe, spawn, model discovery, stop)
+- `ollama-server.test.ts` — Ollama server manager (model selection, filtering, lifecycle)
+- `index.test.ts` — Extension hook logic (routing decisions, model restore, commands)
 
 ## License
 
