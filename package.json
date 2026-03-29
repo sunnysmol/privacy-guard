@@ -1,10 +1,23 @@
 {
-  "name": "privacy-guard",
+  "name": "@sunnysmol/privacy-guard",
   "version": "1.0.0",
-  "private": true,
+  "description": "pi coding agent extension — routes PII-containing prompts to a local model (MLX or Ollama) instead of the cloud",
+  "keywords": ["pi-package", "pi-extension", "privacy", "pii", "local-llm", "mlx", "ollama"],
+  "homepage": "https://github.com/sunnysmol/privacy-guard",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sunnysmol/privacy-guard.git"
+  },
+  "license": "MIT",
   "type": "module",
+  "pi": {
+    "extensions": ["./index.ts"]
+  },
   "scripts": {
     "test": "vitest run"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   },
   "devDependencies": {
     "vitest": "^2.0.0",
